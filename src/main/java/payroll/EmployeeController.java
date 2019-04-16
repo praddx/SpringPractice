@@ -1,21 +1,37 @@
 package payroll;
 
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 
 @RestController
 public class EmployeeController {
 
     private final EmployeeRepository repository;
 
-    public EmployeeController(EmployeeRepository repository) {
+    private final EmployeeAssembler employeeAssembler;
+
+    public EmployeeController(EmployeeRepository repository, EmployeeAssembler employeeAssembler) {
+
         this.repository = repository;
+        this.employeeAssembler = employeeAssembler;
     }
 
     @GetMapping("/employees")
-    List<Employee> all() {
-        return repository.findAll();
+    Resources<Resource<Employee>> all() {
+        List<Resource<Employee>> employees = repository.findAll().stream()
+                .map(employeeAssembler::toResource)
+                .collect(Collectors.toList());
+        return new Resources<>(employees,
+                linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
     }
 
     @PostMapping("/employees")
@@ -24,8 +40,11 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/{id}")
-    Employee one(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException(id));
+    Resource<Employee> one(@PathVariable Long id) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
+
+        return employeeAssembler.toResource(employee);
     }
 
     @PutMapping("/employees/{id}")
