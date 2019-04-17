@@ -68,7 +68,7 @@ public class EmployeeController {
         Resource<Employee> resource = employeeAssembler.toResource(updatedEmployee);
 
         return ResponseEntity.created(new URI(resource.getId().expand().getHref()))
-                .body(updatedEmployee);
+                .body(resource);
     }
 
     @DeleteMapping("/employees/{id}")

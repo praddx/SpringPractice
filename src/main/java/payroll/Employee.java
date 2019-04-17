@@ -1,12 +1,14 @@
 package payroll;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class Employee {
 
@@ -18,8 +20,6 @@ public class Employee {
     private String lastName;
 
     private String role;
-
-    public Employee() {}
 
     public Employee(String firstName, String lastName, String role) {
         this.firstName = firstName;
