@@ -19,9 +19,9 @@ class Order {
     private long id;
 
     private String description;
-    private String status;
+    private OrderStatus status;
 
-    public Order(String description, String status) {
+    public Order(String description, OrderStatus status) {
         this.description = description;
         this.status = status;
     }

@@ -12,8 +12,16 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class OrderResourceAssembler {
 
     Resource<Order> toResource(Order order) {
-        return new Resource<>(order,
+        Resource<Order> resource = new Resource<>(order,
                 linkTo(methodOn(OrderController.class).one(order.getId())).withSelfRel(),
                 linkTo(methodOn(OrderController.class).all()).withRel("orders"));
+
+        if (order.getStatus() == OrderStatus.IN_PROGRESS) {
+            resource.add(linkTo(methodOn(OrderController.class).cancel(order.getId())).withRel("cancel"));
+            resource.add(linkTo(methodOn(OrderController.class).complete(order.getId())).withRel("complete"));
+        }
+
+
+        return resource;
     }
 }
